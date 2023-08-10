@@ -68,22 +68,47 @@ class CNAlpsWeather extends WP_Widget
         $country = $instance['country'] ?? 'France';
         $language = $instance['language'] ?? 'french';
 
-        $api_url = "https://www.weatherwp.com/api/common/publicWeatherForLocation.php?city=$city&country=$country&language=$language";
-
-        $response = wp_remote_get($api_url);
-
-        $data = json_decode(wp_remote_retrieve_body($response));
-
-        $temperature = $data->temp;
-        $icon_url = $data->icon;
-        $description = $data->description;
+//        $api_url = "https://www.weatherwp.com/api/common/publicWeatherForLocation.php?city=$city&country=$country&language=$language";
+//
+//        $response = wp_remote_get($api_url);
+//
+//        $data = json_decode(wp_remote_retrieve_body($response));
+//
+//        $temperature = $data->temp;
+//        $icon_url = $data->icon;
+//        $description = $data->description;
         ?>
-        <div>
-            <?
-            echo "$city - $temperature °C - $description";
-            echo "<img src='$icon_url' alt='Weather Icon'>";
-            ?>
-        </div>
+        <div id="<?php echo $this->get_field_id('weather-info'); ?>"></div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let city = "<?php echo $city; ?>";
+                let country = "<?php echo $country; ?>";
+                let language = "<?php echo $language; ?>";
+                let apiUrl = "https://www.weatherwp.com/api/common/publicWeatherForLocation.php?city=" + city + "&country=" + country + "&language=" + language;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        let weatherInfoDiv = document.getElementById("<?php echo $this->get_field_id('weather-info'); ?>");
+                        let temperature = data.temp;
+                        let iconUrl = data.icon;
+                        let description = data.description;
+
+                        let content = city + " - " + temperature + " °C - " + description + "<br><img src='" + iconUrl + "' alt='Weather Icon'>";
+                        weatherInfoDiv.innerHTML = content;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching weather data:", error);
+                    });
+            });
+        </script>
+<!--        <div>-->
+<!--            --><?//
+//            echo "$city - $temperature °C - $description";
+//            echo "<img src='$icon_url' alt='Weather Icon'>";
+//            ?>
+<!--        </div>-->
         <?php
 
         echo $args['after_widget'];
