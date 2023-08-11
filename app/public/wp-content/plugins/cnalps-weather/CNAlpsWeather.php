@@ -61,8 +61,11 @@ class CNAlpsWeather extends WP_Widget
     // Display the widget
     public function widget($args, $instance)
     {
-        extract($args);
-
+        extract($args);?>
+        // Dans la partie head ou à l'intérieur de ton widget
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <?php
     // Check the widget options
         $city = $instance['city'] ?? 'Crest';
         $country = $instance['country'] ?? 'France';
@@ -79,6 +82,7 @@ class CNAlpsWeather extends WP_Widget
 //        $description = $data->description;
         ?>
         <div id="<?php echo $this->get_field_id('weather-info'); ?>"></div>
+        <div id="map" style="width: 100%; height: 300px;"></div>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -103,7 +107,20 @@ class CNAlpsWeather extends WP_Widget
                     });
             });
         </script>
-<!--        <div>-->
+
+        <script>
+            var map = L.map('map').setView([43.59, -0.09], 5); // Coordonnées de départ
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            var marker = L.marker([43.59, 5]).addTo(map) // Coordonnées du marqueur
+                .bindPopup(city); // Message du popup
+        </script>
+
+
+        <!--        <div>-->
 <!--            --><?//
 //            echo "$city - $temperature °C - $description";
 //            echo "<img src='$icon_url' alt='Weather Icon'>";
